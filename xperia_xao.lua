@@ -1,11 +1,11 @@
--- 🔷 XPERIA XAO LOADING
+-- XPERIA XAO SCRIPT FINAL
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
 local localPlayer = Players.LocalPlayer
 
--- Loading screen
+-- Loading Screen
 local loadingGui = Instance.new("ScreenGui", CoreGui)
 local frame = Instance.new("Frame", loadingGui)
 frame.Size = UDim2.new(1, 0, 1, 0)
@@ -23,15 +23,12 @@ loadingGui:Destroy()
 
 -- UI MENU
 local gui = Instance.new("ScreenGui", CoreGui)
-gui.Name = "XPERIA_XAO_MENU"
 local dragFrame = Instance.new("Frame", gui)
-dragFrame.Size = UDim2.new(0, 200, 0, 200)
+dragFrame.Size = UDim2.new(0, 200, 0, 270)
 dragFrame.Position = UDim2.new(0.05, 0, 0.2, 0)
 dragFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 dragFrame.Active = true
 dragFrame.Draggable = true
-dragFrame.BorderSizePixel = 2
-
 local title = Instance.new("TextLabel", dragFrame)
 title.Text = "🔷 XPERIA XAO MENU"
 title.Size = UDim2.new(1, 0, 0, 30)
@@ -40,24 +37,26 @@ title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 14
 
+-- Buttons (Noclip, ESP, Speed, Fly, Auto Steal)
+local function makeButton(text, yPos, callback)
+    local btn = Instance.new("TextButton", dragFrame)
+    btn.Size = UDim2.new(1, -20, 0, 30)
+    btn.Position = UDim2.new(0, 10, 0, yPos)
+    btn.Text = text .. ": OFF"
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 14
+    return btn
+end
+
 -- Noclip
 local noclip = false
-local char = localPlayer.Character or localPlayer.CharacterAdded:Wait()
-
-local noclipBtn = Instance.new("TextButton", dragFrame)
-noclipBtn.Size = UDim2.new(1, -20, 0, 30)
-noclipBtn.Position = UDim2.new(0, 10, 0, 40)
-noclipBtn.Text = "Noclip: OFF"
-noclipBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-noclipBtn.TextColor3 = Color3.new(1, 1, 1)
-noclipBtn.Font = Enum.Font.Gotham
-noclipBtn.TextSize = 14
-
+local noclipBtn = makeButton("Noclip", 40)
 noclipBtn.MouseButton1Click:Connect(function()
     noclip = not noclip
     noclipBtn.Text = "Noclip: " .. (noclip and "ON" or "OFF")
 end)
-
 RunService.Stepped:Connect(function()
     if noclip and localPlayer.Character then
         for _, part in pairs(localPlayer.Character:GetDescendants()) do
@@ -68,9 +67,9 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- ESP
-local function addESP(target)
-    for _, part in ipairs(target:GetDescendants()) do
+-- ESP Player
+local function addESP(char)
+    for _, part in ipairs(char:GetDescendants()) do
         if part:IsA("BasePart") and not part:FindFirstChild("XperiaESP") then
             local box = Instance.new("BoxHandleAdornment")
             box.Name = "XperiaESP"
@@ -84,120 +83,130 @@ local function addESP(target)
         end
     end
 end
-
-local function removeESP(target)
-    for _, part in ipairs(target:GetDescendants()) do
-        local adorn = part:FindFirstChild("XperiaESP")
-        if adorn then adorn:Destroy() end
-    end
-end
-
 local esp = false
-
-local espBtn = Instance.new("TextButton", dragFrame)
-espBtn.Size = UDim2.new(1, -20, 0, 30)
-espBtn.Position = UDim2.new(0, 10, 0, 80)
-espBtn.Text = "ESP: OFF"
-espBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-espBtn.TextColor3 = Color3.new(1, 1, 1)
-espBtn.Font = Enum.Font.Gotham
-espBtn.TextSize = 14
-
+local espBtn = makeButton("ESP", 80)
 espBtn.MouseButton1Click:Connect(function()
     esp = not esp
     espBtn.Text = "ESP: " .. (esp and "ON" or "OFF")
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= localPlayer and player.Character then
-            if esp then addESP(player.Character)
-            else removeESP(player.Character) end
+            if esp then addESP(player.Character) end
         end
     end
-end)
-
-Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function(char)
-        wait(1)
-        if esp then addESP(char) end
-    end)
 end)
 
 -- Speed Hack
 local speed = false
 local defaultWalkSpeed = 16
-local speedValue = 80
-
-local speedBtn = Instance.new("TextButton", dragFrame)
-speedBtn.Size = UDim2.new(1, -20, 0, 30)
-speedBtn.Position = UDim2.new(0, 10, 0, 120)
-speedBtn.Text = "Speed: OFF"
-speedBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-speedBtn.TextColor3 = Color3.new(1, 1, 1)
-speedBtn.Font = Enum.Font.Gotham
-speedBtn.TextSize = 14
-
+local speedBtn = makeButton("Speed", 120)
 speedBtn.MouseButton1Click:Connect(function()
     speed = not speed
     speedBtn.Text = "Speed: " .. (speed and "ON" or "OFF")
     local hum = localPlayer.Character and localPlayer.Character:FindFirstChildOfClass("Humanoid")
     if hum then
-        hum.WalkSpeed = speed and speedValue or defaultWalkSpeed
+        hum.WalkSpeed = speed and 80 or defaultWalkSpeed
     end
-end)
-
-localPlayer.CharacterAdded:Connect(function(char)
-    wait(1)
-    local hum = char:WaitForChild("Humanoid")
-    hum.WalkSpeed = speed and speedValue or defaultWalkSpeed
 end)
 
 -- Fly
 local flying = false
-local flySpeed = 5
-local vel, gyro
-
-local flyBtn = Instance.new("TextButton", dragFrame)
-flyBtn.Size = UDim2.new(1, -20, 0, 30)
-flyBtn.Position = UDim2.new(0, 10, 0, 160)
-flyBtn.Text = "Fly: OFF"
-flyBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-flyBtn.TextColor3 = Color3.new(1, 1, 1)
-flyBtn.Font = Enum.Font.Gotham
-flyBtn.TextSize = 14
-
+local flyBtn = makeButton("Fly", 160)
 flyBtn.MouseButton1Click:Connect(function()
     flying = not flying
     flyBtn.Text = "Fly: " .. (flying and "ON" or "OFF")
     local char = localPlayer.Character or localPlayer.CharacterAdded:Wait()
     local hrp = char:WaitForChild("HumanoidRootPart")
-
     if flying then
-        vel = Instance.new("BodyVelocity", hrp)
-        gyro = Instance.new("BodyGyro", hrp)
+        local vel = Instance.new("BodyVelocity", hrp)
+        local gyro = Instance.new("BodyGyro", hrp)
         vel.Velocity = Vector3.zero
         vel.MaxForce = Vector3.new(9999, 9999, 9999)
         gyro.CFrame = hrp.CFrame
         gyro.MaxTorque = Vector3.new(9999, 9999, 9999)
-
         RunService.RenderStepped:Connect(function()
             if flying then
-                local moveDir = Vector3.zero
-                if UIS:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + workspace.CurrentCamera.CFrame.LookVector end
-                if UIS:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - workspace.CurrentCamera.CFrame.LookVector end
-                if UIS:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - workspace.CurrentCamera.CFrame.RightVector end
-                if UIS:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + workspace.CurrentCamera.CFrame.RightVector end
-                if UIS:IsKeyDown(Enum.KeyCode.Space) then moveDir = moveDir + Vector3.new(0, 1, 0) end
-                if UIS:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir = moveDir - Vector3.new(0, 1, 0) end
-                vel.Velocity = moveDir.Unit * flySpeed
+                local move = Vector3.zero
+                if UIS:IsKeyDown(Enum.KeyCode.W) then move += workspace.CurrentCamera.CFrame.LookVector end
+                if UIS:IsKeyDown(Enum.KeyCode.S) then move -= workspace.CurrentCamera.CFrame.LookVector end
+                if UIS:IsKeyDown(Enum.KeyCode.A) then move -= workspace.CurrentCamera.CFrame.RightVector end
+                if UIS:IsKeyDown(Enum.KeyCode.D) then move += workspace.CurrentCamera.CFrame.RightVector end
+                if UIS:IsKeyDown(Enum.KeyCode.Space) then move += Vector3.new(0, 1, 0) end
+                if UIS:IsKeyDown(Enum.KeyCode.LeftShift) then move -= Vector3.new(0, 1, 0) end
+                vel.Velocity = move.Unit * 50
                 gyro.CFrame = workspace.CurrentCamera.CFrame
             end
         end)
     else
-        if vel then vel:Destroy() end
-        if gyro then gyro:Destroy() end
+        hrp:FindFirstChild("BodyVelocity"):Destroy()
+        hrp:FindFirstChild("BodyGyro"):Destroy()
     end
 end)
 
--- Logo Custom sebagai tombol minimize
+-- Auto Steal
+local stealBtn = makeButton("Auto Steal", 200)
+stealBtn.MouseButton1Click:Connect(function()
+    local char = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    local base = workspace:FindFirstChild("Base") or workspace:FindFirstChild("BaseZone")
+    if not base then warn("Base tidak ditemukan") return end
+    for i = 5,1,-1 do
+        print("Stealing in " .. i)
+        wait(1)
+    end
+    hrp.CFrame = base.CFrame + Vector3.new(0,3,0)
+    print("Brain dibawa ke base!")
+end)
+
+-- ESP Base
+for _, obj in pairs(workspace:GetDescendants()) do
+    if obj:IsA("BasePart") and (obj.Name:lower():find("base") or obj.Name:lower():find("safe")) then
+        if not obj:FindFirstChild("ESP_Base") then
+            local box = Instance.new("BoxHandleAdornment")
+            box.Name = "ESP_Base"
+            box.Adornee = obj
+            box.AlwaysOnTop = true
+            box.ZIndex = 10
+            box.Size = obj.Size
+            box.Color3 = Color3.new(1, 1, 0)
+            box.Transparency = 0.4
+            box.Parent = obj
+        end
+    end
+end
+
+-- ESP Timer
+local function espTimer(player)
+    if player == localPlayer then return end
+    local function attach()
+        local char = player.Character
+        if char and char:FindFirstChild("Head") and not char.Head:FindFirstChild("XperiaTimer") then
+            local bb = Instance.new("BillboardGui", char.Head)
+            bb.Name = "XperiaTimer"
+            bb.Size = UDim2.new(0, 100, 0, 30)
+            bb.StudsOffset = Vector3.new(0, 2.5, 0)
+            bb.AlwaysOnTop = true
+            local txt = Instance.new("TextLabel", bb)
+            txt.Size = UDim2.new(1, 0, 1, 0)
+            txt.BackgroundTransparency = 1
+            txt.Text = "Timer..."
+            txt.TextColor3 = Color3.new(1, 1, 1)
+            txt.Font = Enum.Font.GothamBold
+            txt.TextScaled = true
+            task.spawn(function()
+                while bb and player and player.Parent do
+                    txt.Text = "Timer: " .. math.random(10,99) .. "s"
+                    wait(1)
+                end
+            end)
+        end
+    end
+    player.CharacterAdded:Connect(attach)
+    if player.Character then attach() end
+end
+for _, p in pairs(Players:GetPlayers()) do espTimer(p) end
+Players.PlayerAdded:Connect(espTimer)
+
+-- Minimize
 local logoImage = Instance.new("ImageButton", gui)
 logoImage.Name = "XperiaLogo"
 logoImage.Size = UDim2.new(0, 50, 0, 50)
@@ -214,33 +223,33 @@ closeBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
 closeBtn.TextColor3 = Color3.new(1, 1, 1)
 closeBtn.Font = Enum.Font.GothamBold
 closeBtn.TextSize = 16
-
 closeBtn.MouseButton1Click:Connect(function()
     dragFrame.Visible = false
     logoImage.Visible = true
 end)
-
 logoImage.MouseButton1Click:Connect(function()
     dragFrame.Visible = true
     logoImage.Visible = false
 end)
 
--- Anti Kick
+-- Anti Kick / Anti Ban
 local mt = getrawmetatable(game)
 setreadonly(mt, false)
-
 local oldNamecall = mt.__namecall
-
 mt.__namecall = newcclosure(function(self, ...)
     local method = getnamecallmethod()
-    local args = {...}
-    
     if tostring(self) == "Kick" or method == "Kick" then
-        warn("❌ Kick attempt blocked by XPERIA Anti-Kick!")
-        return nil
+        return warn("[XPERIA] Kick attempt blocked!")
     end
-    
-    return oldNamecall(self, unpack(args))
+    return oldNamecall(self, ...)
 end)
 
-print("✅ XPERIA XAO FINAL - All features active 🔷")
+hookmetamethod(game, "__namecall", function(self, ...)
+    local method = getnamecallmethod()
+    if method == "FireServer" and table.find({"BanEvent", "Punish", "LogExploit"}, self.Name) then
+        return warn("[XPERIA] Remote blocked: " .. self.Name)
+    end
+    return oldNamecall(self, ...)
+end)
+
+print("XPERIA XAO Loaded ✅")
