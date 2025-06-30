@@ -227,4 +227,32 @@ minimizeButton.MouseButton1Click:Connect(function()
     minimizeButton.Visible = false
 end)
 
-print("✅ XPERIA XAO FULL | Menu, Noclip, ESP, Speed, Fly, Minimize Siap Bosku")
+-- ✅ Anti Kick System
+local mt = getrawmetatable(game)
+setreadonly(mt, false)
+
+local oldNamecall = mt.__namecall
+
+mt.__namecall = newcclosure(function(self, ...)
+    local method = getnamecallmethod()
+    local args = {...}
+    
+    if tostring(self) == "Kick" or method == "Kick" then
+        warn("❌ Kick attempt blocked by XPERIA Anti-Kick!")
+        return nil
+    end
+    
+    return oldNamecall(self, unpack(args))
+end)
+
+localPlayer.CharacterAdded:Connect(function(char)
+    local hum = char:WaitForChild("Humanoid")
+    hum.BreakJointsOnDeath = false
+    hum:GetPropertyChangedSignal("Health"):Connect(function()
+        if hum.Health <= 0 then
+            hum.Health = 100
+        end
+    end)
+end)
+
+print("✅ XPERIA Anti-Kick aktif 🛡️")
