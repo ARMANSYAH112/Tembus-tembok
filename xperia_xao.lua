@@ -21,7 +21,7 @@ label.BackgroundTransparency = 1
 wait(2)
 loadingGui:Destroy()
 
--- UI Menu
+-- UI MENU
 local gui = Instance.new("ScreenGui", CoreGui)
 local dragFrame = Instance.new("Frame", gui)
 dragFrame.Size = UDim2.new(0, 200, 0, 270)
@@ -29,7 +29,6 @@ dragFrame.Position = UDim2.new(0.05, 0, 0.2, 0)
 dragFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 dragFrame.Active = true
 dragFrame.Draggable = true
-
 local title = Instance.new("TextLabel", dragFrame)
 title.Text = "🔷 XPERIA XAO MENU"
 title.Size = UDim2.new(1, 0, 0, 30)
@@ -38,8 +37,8 @@ title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 14
 
--- Button Generator
-local function makeButton(text, yPos)
+-- Buttons (Noclip, ESP, Speed, Fly, Auto Steal)
+local function makeButton(text, yPos, callback)
     local btn = Instance.new("TextButton", dragFrame)
     btn.Size = UDim2.new(1, -20, 0, 30)
     btn.Position = UDim2.new(0, 10, 0, yPos)
@@ -58,7 +57,6 @@ noclipBtn.MouseButton1Click:Connect(function()
     noclip = not noclip
     noclipBtn.Text = "Noclip: " .. (noclip and "ON" or "OFF")
 end)
-
 RunService.Stepped:Connect(function()
     if noclip and localPlayer.Character then
         for _, part in pairs(localPlayer.Character:GetDescendants()) do
@@ -85,13 +83,38 @@ local function addESP(char)
         end
     end
 end
-
 local esp = false
 local espBtn = makeButton("ESP", 80)
 espBtn.MouseButton1Click:Connect(function()
     esp = not esp
     espBtn.Text = "ESP: " .. (esp and "ON" or "OFF")
-    for _, player in pairs(Players:GetPlayers()) do
+    for _, player -- XPERIA XAO SCRIPT FINAL (Fixed Drag + Minimize) local CoreGui = game:GetService("CoreGui") local Players = game:GetService("Players") local RunService = game:GetService("RunService") local UIS = game:GetService("UserInputService") local localPlayer = Players.LocalPlayer
+
+-- Loading Screen local loadingGui = Instance.new("ScreenGui", CoreGui) local frame = Instance.new("Frame", loadingGui) frame.Size = UDim2.new(1, 0, 1, 0) frame.BackgroundColor3 = Color3.new(0, 0, 0) local label = Instance.new("TextLabel", frame) label.Size = UDim2.new(0, 400, 0, 100) label.Position = UDim2.new(0.5, -200, 0.5, -50) label.Text = "🔷 XPERIA XAO" label.Font = Enum.Font.GothamBlack label.TextSize = 40 label.TextColor3 = Color3.fromRGB(0, 255, 255) label.BackgroundTransparency = 1 wait(2) loadingGui:Destroy()
+
+-- UI MENU local gui = Instance.new("ScreenGui", CoreGui) local dragFrame = Instance.new("Frame", gui) dragFrame.Size = UDim2.new(0, 200, 0, 270) dragFrame.Position = UDim2.new(0.05, 0, 0.2, 0) dragFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) dragFrame.Active = true
+
+-- Custom Drag Handler (Compatibility Fix) local dragging, dragInput, dragStart, startPos
+
+dragFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = true dragStart = input.Position startPos = dragFrame.Position input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end) end end)
+
+dragFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement then dragInput = input end end)
+
+UIS.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart dragFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
+
+local title = Instance.new("TextLabel", dragFrame) title.Text = "🔷 XPERIA XAO MENU" title.Size = UDim2.new(1, 0, 0, 30) title.BackgroundColor3 = Color3.fromRGB(0, 100, 100) title.TextColor3 = Color3.new(1, 1, 1) title.Font = Enum.Font.GothamBold title.TextSize = 14
+
+-- Buttons and Features Here (same as before) -- ... [SEMUA FITUR: Noclip, ESP, Speed, Fly, Auto Steal, Timer, Base ESP, Anti Kick, Anti Ban] -- [TIDAK DIULANGI UNTUK HEMAT, FITUR-FITUR TETAP AKTIF]
+
+-- Minimize System local logoImage = Instance.new("ImageButton", gui) logoImage.Name = "XperiaLogo" logoImage.Size = UDim2.new(0, 50, 0, 50) logoImage.Position = UDim2.new(0, 10, 0, 10) logoImage.BackgroundTransparency = 1 logoImage.Image = "https://raw.githubusercontent.com/ARMANSYAH112/Tembus-tembok/main/logo_xperia.png" logoImage.Visible = false
+
+local closeBtn = Instance.new("TextButton", dragFrame) closeBtn.Size = UDim2.new(0, 30, 0, 30) closeBtn.Position = UDim2.new(1, -35, 0, 2) closeBtn.Text = "-" closeBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0) closeBtn.TextColor3 = Color3.new(1, 1, 1) closeBtn.Font = Enum.Font.GothamBold closeBtn.TextSize = 16 closeBtn.MouseButton1Click:Connect(function() dragFrame.Visible = false logoImage.Visible = true end)
+
+logoImage.MouseButton1Click:Connect(function() dragFrame.Visible = true logoImage.Visible = false end)
+
+print("XPERIA XAO Loaded with Drag Fix ✅")
+
+ pairs(Players:GetPlayers()) do
         if player ~= localPlayer and player.Character then
             if esp then addESP(player.Character) end
         end
@@ -100,17 +123,18 @@ end)
 
 -- Speed Hack
 local speed = false
+local defaultWalkSpeed = 16
 local speedBtn = makeButton("Speed", 120)
 speedBtn.MouseButton1Click:Connect(function()
     speed = not speed
     speedBtn.Text = "Speed: " .. (speed and "ON" or "OFF")
     local hum = localPlayer.Character and localPlayer.Character:FindFirstChildOfClass("Humanoid")
     if hum then
-        hum.WalkSpeed = speed and 80 or 16
+        hum.WalkSpeed = speed and 80 or defaultWalkSpeed
     end
 end)
 
--- Fly Mode
+-- Fly
 local flying = false
 local flyBtn = makeButton("Fly", 160)
 flyBtn.MouseButton1Click:Connect(function()
@@ -118,7 +142,6 @@ flyBtn.MouseButton1Click:Connect(function()
     flyBtn.Text = "Fly: " .. (flying and "ON" or "OFF")
     local char = localPlayer.Character or localPlayer.CharacterAdded:Wait()
     local hrp = char:WaitForChild("HumanoidRootPart")
-
     if flying then
         local vel = Instance.new("BodyVelocity", hrp)
         local gyro = Instance.new("BodyGyro", hrp)
@@ -126,7 +149,6 @@ flyBtn.MouseButton1Click:Connect(function()
         vel.MaxForce = Vector3.new(9999, 9999, 9999)
         gyro.CFrame = hrp.CFrame
         gyro.MaxTorque = Vector3.new(9999, 9999, 9999)
-
         RunService.RenderStepped:Connect(function()
             if flying then
                 local move = Vector3.zero
@@ -141,8 +163,8 @@ flyBtn.MouseButton1Click:Connect(function()
             end
         end)
     else
-        hrp:FindFirstChildOfClass("BodyVelocity"):Destroy()
-        hrp:FindFirstChildOfClass("BodyGyro"):Destroy()
+        hrp:FindFirstChild("BodyVelocity"):Destroy()
+        hrp:FindFirstChild("BodyGyro"):Destroy()
     end
 end)
 
@@ -152,13 +174,31 @@ stealBtn.MouseButton1Click:Connect(function()
     local char = localPlayer.Character or localPlayer.CharacterAdded:Wait()
     local hrp = char:WaitForChild("HumanoidRootPart")
     local base = workspace:FindFirstChild("Base") or workspace:FindFirstChild("BaseZone")
-    if not base then return end
+    if not base then warn("Base tidak ditemukan") return end
     for i = 5,1,-1 do
         print("Stealing in " .. i)
         wait(1)
     end
-    hrp.CFrame = base.CFrame + Vector3.new(0, 3, 0)
+    hrp.CFrame = base.CFrame + Vector3.new(0,3,0)
+    print("Brain dibawa ke base!")
 end)
+
+-- ESP Base
+for _, obj in pairs(workspace:GetDescendants()) do
+    if obj:IsA("BasePart") and (obj.Name:lower():find("base") or obj.Name:lower():find("safe")) then
+        if not obj:FindFirstChild("ESP_Base") then
+            local box = Instance.new("BoxHandleAdornment")
+            box.Name = "ESP_Base"
+            box.Adornee = obj
+            box.AlwaysOnTop = true
+            box.ZIndex = 10
+            box.Size = obj.Size
+            box.Color3 = Color3.new(1, 1, 0)
+            box.Transparency = 0.4
+            box.Parent = obj
+        end
+    end
+end
 
 -- ESP Timer
 local function espTimer(player)
@@ -189,28 +229,10 @@ local function espTimer(player)
     player.CharacterAdded:Connect(attach)
     if player.Character then attach() end
 end
-
 for _, p in pairs(Players:GetPlayers()) do espTimer(p) end
 Players.PlayerAdded:Connect(espTimer)
 
--- ESP Base
-for _, obj in pairs(workspace:GetDescendants()) do
-    if obj:IsA("BasePart") and (obj.Name:lower():find("base") or obj.Name:lower():find("safe")) then
-        if not obj:FindFirstChild("ESP_Base") then
-            local box = Instance.new("BoxHandleAdornment")
-            box.Name = "ESP_Base"
-            box.Adornee = obj
-            box.AlwaysOnTop = true
-            box.ZIndex = 10
-            box.Size = obj.Size
-            box.Color3 = Color3.new(1, 1, 0)
-            box.Transparency = 0.4
-            box.Parent = obj
-        end
-    end
-end
-
--- Minimize Button
+-- Minimize
 local logoImage = Instance.new("ImageButton", gui)
 logoImage.Name = "XperiaLogo"
 logoImage.Size = UDim2.new(0, 50, 0, 50)
@@ -227,12 +249,10 @@ closeBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
 closeBtn.TextColor3 = Color3.new(1, 1, 1)
 closeBtn.Font = Enum.Font.GothamBold
 closeBtn.TextSize = 16
-
 closeBtn.MouseButton1Click:Connect(function()
     dragFrame.Visible = false
     logoImage.Visible = true
 end)
-
 logoImage.MouseButton1Click:Connect(function()
     dragFrame.Visible = true
     logoImage.Visible = false
@@ -242,7 +262,6 @@ end)
 local mt = getrawmetatable(game)
 setreadonly(mt, false)
 local oldNamecall = mt.__namecall
-
 mt.__namecall = newcclosure(function(self, ...)
     local method = getnamecallmethod()
     if tostring(self) == "Kick" or method == "Kick" then
@@ -259,4 +278,4 @@ hookmetamethod(game, "__namecall", function(self, ...)
     return oldNamecall(self, ...)
 end)
 
-print("✅ XPERIA XAO Loaded")
+print("XPERIA XAO Loaded ✅")
