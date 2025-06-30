@@ -197,16 +197,14 @@ flyBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- Minimize system
-local minimizeButton = Instance.new("TextButton", gui)
-minimizeButton.Size = UDim2.new(0, 40, 0, 40)
-minimizeButton.Position = UDim2.new(0, 10, 0, 10)
-minimizeButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-minimizeButton.Text = "🔷"
-minimizeButton.TextColor3 = Color3.new(1, 1, 1)
-minimizeButton.Font = Enum.Font.GothamBold
-minimizeButton.TextSize = 18
-minimizeButton.Visible = false
+-- Logo Custom sebagai tombol minimize
+local logoImage = Instance.new("ImageButton", gui)
+logoImage.Name = "XperiaLogo"
+logoImage.Size = UDim2.new(0, 50, 0, 50)
+logoImage.Position = UDim2.new(0, 10, 0, 10)
+logoImage.BackgroundTransparency = 1
+logoImage.Image = "https://raw.githubusercontent.com/ARMANSYAH112/Tembus-tembok/main/logo_xperia.png"
+logoImage.Visible = false
 
 local closeBtn = Instance.new("TextButton", dragFrame)
 closeBtn.Size = UDim2.new(0, 30, 0, 30)
@@ -219,15 +217,15 @@ closeBtn.TextSize = 16
 
 closeBtn.MouseButton1Click:Connect(function()
     dragFrame.Visible = false
-    minimizeButton.Visible = true
+    logoImage.Visible = true
 end)
 
-minimizeButton.MouseButton1Click:Connect(function()
+logoImage.MouseButton1Click:Connect(function()
     dragFrame.Visible = true
-    minimizeButton.Visible = false
+    logoImage.Visible = false
 end)
 
--- ✅ Anti Kick System
+-- Anti Kick
 local mt = getrawmetatable(game)
 setreadonly(mt, false)
 
@@ -245,14 +243,4 @@ mt.__namecall = newcclosure(function(self, ...)
     return oldNamecall(self, unpack(args))
 end)
 
-localPlayer.CharacterAdded:Connect(function(char)
-    local hum = char:WaitForChild("Humanoid")
-    hum.BreakJointsOnDeath = false
-    hum:GetPropertyChangedSignal("Health"):Connect(function()
-        if hum.Health <= 0 then
-            hum.Health = 100
-        end
-    end)
-end)
-
-print("✅ XPERIA Anti-Kick aktif 🛡️")
+print("✅ XPERIA XAO FINAL - All features active 🔷")
